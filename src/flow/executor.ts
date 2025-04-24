@@ -3,6 +3,7 @@ import type { FlowDefinition, FlowStep } from "../types/flow";
 
 import { BrowserManager } from "../bot/browser";
 import { log } from "../utils/log";
+import { createBooking, updateBookingStatus } from "../db"; // Added import
 
 export class FlowExecutor {
 	private browser: BrowserManager;
@@ -33,8 +34,28 @@ export class FlowExecutor {
 	}
 
 	async execute(): Promise<ExecutionResult> {
+		log.info(`Executing flow: ${this.flow.name}`);
+
+		// Declare bookingId here to be accessible in try/catch/finally
+		let bookingId: string | null = null;
+
 		try {
 			await this.browser.initialize(this.headless); // Set to false for visible browser, true for headless
+
+			// Create initial booking record
+			try {
+				bookingId = await createBooking(
+					this.bookingDetails.name,
+					this.bookingDetails.date,
+					this.bookingDetails.time,
+					this.bookingDetails.guests,
+				);
+				log.info(`Booking created with ID: ${bookingId}`);
+			} catch (dbError) {
+				log.error("Failed to create initial booking record:", dbError);
+				// Decide if we should stop execution if booking fails
+				// For now, we'll log and continue, but the ID will be null
+			}
 
 			// Start by navigating to the base URL or the provided URL
 			const startUrl = this.bookingDetails.url || this.flow.baseUrl;
@@ -94,6 +115,10 @@ export class FlowExecutor {
 			}
 
 			log.success("Flow execution completed successfully");
+			// Update booking status to 'found' on successful completion
+			if (bookingId) {
+				await updateBookingStatus(bookingId, "found");
+			}
 			await this.browser.close();
 			return {
 				success: true,
@@ -102,6 +127,10 @@ export class FlowExecutor {
 		} catch (error) {
 			if (error instanceof Error) {
 				log.error(`Flow execution failed: ${error.message}`);
+			}
+			// Update booking status to 'error' on failure
+			if (bookingId) {
+				await updateBookingStatus(bookingId, "error");
 			}
 			await this.browser.close();
 			return { success: false, message: `Failed with error: ${error}` };
