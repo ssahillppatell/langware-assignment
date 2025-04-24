@@ -8,6 +8,7 @@ export function initializeDb() {
 		db.run(`
       CREATE TABLE IF NOT EXISTS bookings (
         id TEXT PRIMARY KEY,
+        url TEXT NOT NULL,
         name TEXT NOT NULL,
         date TEXT NOT NULL,
         time TEXT NOT NULL,
@@ -37,6 +38,7 @@ export type BookingStatus = "pending" | "error" | "found" | "not-found";
 
 export interface Booking {
 	id: string;
+	url: string;
 	name: string;
 	date: string;
 	time: string;
@@ -48,6 +50,7 @@ export interface Booking {
 }
 
 export async function createBooking(
+	url: string,
 	name: string,
 	date: string,
 	time: string,
@@ -58,11 +61,12 @@ export async function createBooking(
 	const status: BookingStatus = "pending";
 	try {
 		const query = db.query(`
-      INSERT INTO bookings (id, name, date, time, guests, status, options)
-      VALUES ($id, $name, $date, $time, $guests, $status, $options);
+      INSERT INTO bookings (id, url, name, date, time, guests, status, options)
+      VALUES ($id, $url, $name, $date, $time, $guests, $status, $options);
     `);
 		query.run({
 			$id: id,
+			$url: url,
 			$name: name,
 			$date: date,
 			$time: time,
@@ -105,7 +109,7 @@ export async function updateBookingStatus(
 export function getBookingById(id: string): Booking | null {
 	try {
 		const query = db.query<Booking, { $id: string }>(`
-            SELECT id, name, date, time, guests, status, options, created_at, updated_at
+            SELECT id, url, name, date, time, guests, status, options, created_at, updated_at
             FROM bookings
             WHERE id = $id;
         `);

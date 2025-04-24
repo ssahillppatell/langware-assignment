@@ -44,6 +44,7 @@ async function runBotTask(
 	let bookingId: string | null = null;
 	try {
 		bookingId = await createBooking(
+			bookingDetails.url,
 			bookingDetails.name,
 			bookingDetails.date,
 			bookingDetails.time,
