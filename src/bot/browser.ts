@@ -63,7 +63,9 @@ export class BrowserManager {
 
 	async getHumanVerification(): Promise<void> {
 		if (!this.page) throw new Error("Browser not initialized");
-		console.log("\n Human verification required. Please complete the verification in the browser window.");
+		console.log(
+			"\n Human verification required. Please complete the verification in the browser window.",
+		);
 		console.log("Press Enter after completing verification to continue...");
 
 		if (this.browser) {

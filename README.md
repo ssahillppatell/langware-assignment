@@ -52,32 +52,44 @@ Booking attempts and their final status (pending, found, error) are logged in a 
 *   Bun installed ([Installation Guide](https://bun.sh/docs/installation))
 *   Git
 
-### Running Locally
+### Running the Bot
 
-1.  **Clone the repository:**
+There are two ways to run the bot:
+
+1.  **Command Line Interface (CLI):**
+	    *   Provide all booking details as command-line arguments.
+	    *   Arguments are required unless using the `--ui` flag.
+
     ```bash
-    git clone <repository-url>
-    cd langware-assignment
+    bun run src/index.ts [url] [name] [date] [time] [guests] [--no-headless]
     ```
-2.  **Install dependencies:**
-    ```bash
-    bun install
-    ```
-3.  **Run the bot:**
-    ```bash
-    bun run src/index.ts <url> <name> <date> <time> <guests> [--no-headless]
-    ```
-    *   **`<url>`:** Full URL of the restaurant booking page.
-    *   **`<name>`:** Name of the restaurant (used for logging).
-    *   **`<date>`:** Desired date (YYYY-MM-DD).
-    *   **`<time>`:** Desired time (HH:MM, 24-hour format).
-    *   **`<guests>`:** Number of guests (positive integer).
+    *   **`[url]`:** Full URL of the restaurant booking page.
+    *   **`[name]`:** Name of the restaurant (used for logging).
+    *   **`[date]`:** Desired date (YYYY-MM-DD).
+    *   **`[time]`:** Desired time (HH:MM, 24-hour format).
+    *   **`[guests]`:** Number of guests (positive integer).
     *   **`--no-headless` (Optional):** Runs with a visible browser window. If omitted, runs in headless mode by default.
 
-    **Example:**
+	    **Example (CLI):**
+	    ```bash
+	    bun run src/index.ts https://ontopo.com/en/us "Food" "2025-04-26" "19:00" 2
+	    ```
+
+2.  **Web User Interface (UI):**
+    *   Launches a simple web interface where you can enter booking details in a form.
+    *   Uses a visible browser (non-headless) for the bot execution by default when initiated from the UI.
+
     ```bash
-    bun run src/index.ts "https://ontopo.com/en/us" "A Food Affair" "2025-05-20" "19:30" 2
+    bun run src/index.ts --ui
     ```
+    *   This command starts a web server, typically on `http://localhost:3000` (check console output for the exact URL).
+    *   Open the URL in your web browser.
+    *   Fill in the form fields (URL, Name, Date, Time, Guests) and click "Find Tables".
+    *   The result (success or error message) will be displayed on the web page.
+
+### Database
+
+Booking attempts and their final status (pending, found, error) are logged in a local SQLite database (`bookings.sqlite`).
 
 ## Flow Definitions (`flows/*.json`)
 

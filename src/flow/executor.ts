@@ -2,8 +2,8 @@ import type { BookingDetails, ExecutionResult } from "../types/booking";
 import type { FlowDefinition, FlowStep } from "../types/flow";
 
 import { BrowserManager } from "../bot/browser";
-import { log } from "../utils/log";
 import { updateBookingStatus } from "../db";
+import { log } from "../utils/log";
 
 export class FlowExecutor {
 	private browser: BrowserManager;
