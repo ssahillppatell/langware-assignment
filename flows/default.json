@@ -1,118 +1,118 @@
 {
-    "name": "Default Table Booking",
-    "baseUrl": "",
-    "startStep": "navigateToUrl",
-    "steps": {
-      "navigateToUrl": {
-        "action": "navigate",
-        "value": "{{url}}",
-        "description": "Navigate to the provided URL",
-        "waitForNavigation": true,
-        "nextStep": "lookForSearchField"
-      },
-      "lookForSearchField": {
-        "action": "waitForSelector",
-        "selector": "input[type='search'], input[placeholder*='search'], input[placeholder*='Search']",
-        "description": "Look for a search field",
-        "timeout": 5000,
-        "optional": true,
-        "condition": {
-          "exists": "input[type='search'], input[placeholder*='search'], input[placeholder*='Search']"
-        },
-        "nextStep": "searchRestaurant"
-      },
-      "searchRestaurant": {
-        "action": "fill",
-        "selector": "input[type='search'], input[placeholder*='search'], input[placeholder*='Search']",
-        "value": "{{name}}",
-        "description": "Enter restaurant name in search field",
-        "nextStep": "clickSearch"
-      },
-      "clickSearch": {
-        "action": "click",
-        "selector": "button[type='submit'], [aria-label='Search']",
-        "description": "Click search button",
-        "waitForNavigation": true,
-        "nextStep": "lookForDateField"
-      },
-      "lookForDateField": {
-        "action": "waitForSelector",
-        "selector": "input[type='date'], [aria-label*='date'], [placeholder*='date']",
-        "description": "Look for date input field",
-        "timeout": 5000,
-        "nextStep": "enterDate"
-      },
-      "enterDate": {
-        "action": "fill",
-        "selector": "input[type='date'], [aria-label*='date'], [placeholder*='date']",
-        "value": "{{date}}",
-        "description": "Enter date",
-        "nextStep": "lookForTimeField"
-      },
-      "lookForTimeField": {
-        "action": "waitForSelector",
-        "selector": "input[type='time'], select[aria-label*='time'], [placeholder*='time']",
-        "description": "Look for time input field",
-        "timeout": 5000,
-        "nextStep": "enterTime"
-      },
-      "enterTime": {
-        "action": "fill",
-        "selector": "input[type='time'], select[aria-label*='time'], [placeholder*='time']",
-        "value": "{{time}}",
-        "description": "Enter time",
-        "nextStep": "lookForGuestsField"
-      },
-      "lookForGuestsField": {
-        "action": "waitForSelector",
-        "selector": "input[type='number'], select[aria-label*='guest'], [placeholder*='guest'], [aria-label*='people'], [placeholder*='people']",
-        "description": "Look for guests input field",
-        "timeout": 5000,
-        "nextStep": "enterGuests"
-      },
-      "enterGuests": {
-        "action": "fill",
-        "selector": "input[type='number'], select[aria-label*='guest'], [placeholder*='guest'], [aria-label*='people'], [placeholder*='people']",
-        "value": "{{guests}}",
-        "description": "Enter number of guests",
-        "nextStep": "lookForSubmitButton"
-      },
-      "lookForSubmitButton": {
-        "action": "waitForSelector",
-        "selector": "button[type='submit'], button:has-text('Find'), button:has-text('Search'), button:has-text('Book'), button:has-text('Reserve')",
-        "description": "Look for submit button",
-        "timeout": 5000,
-        "nextStep": "clickSubmit"
-      },
-      "clickSubmit": {
-        "action": "click",
-        "selector": "button[type='submit'], button:has-text('Find'), button:has-text('Search'), button:has-text('Book'), button:has-text('Reserve')",
-        "description": "Click submit button",
-        "waitForNavigation": true,
-        "nextStep": "checkHumanVerification"
-      },
-      "checkHumanVerification": {
-        "action": "waitForSelector",
-        "selector": "[aria-label*='captcha'], [aria-label*='Captcha'], iframe[src*='recaptcha'], iframe[src*='hcaptcha']",
-        "description": "Check if human verification is required",
-        "timeout": 3000,
-        "optional": true,
-        "condition": {
-          "exists": "[aria-label*='captcha'], [aria-label*='Captcha'], iframe[src*='recaptcha'], iframe[src*='hcaptcha']"
-        },
-        "nextStep": "handleHumanVerification"
-      },
-      "handleHumanVerification": {
-        "action": "humanVerification",
-        "description": "Pause for human verification",
-        "nextStep": "checkResults"
-      },
-      "checkResults": {
-        "action": "waitForSelector",
-        "selector": ".available, .unavailable, .no-availability, .success, .error",
-        "description": "Wait for availability results",
-        "timeout": 10000,
-        "nextStep": null
-      }
-    }
-  }
+	"name": "Default Table Booking",
+	"baseUrl": "",
+	"startStep": "navigateToUrl",
+	"steps": {
+		"navigateToUrl": {
+			"action": "navigate",
+			"value": "{{url}}",
+			"description": "Navigate to the provided URL",
+			"waitForNavigation": true,
+			"nextStep": "lookForSearchField"
+		},
+		"lookForSearchField": {
+			"action": "waitForSelector",
+			"selector": "input[type='search'], input[placeholder*='search'], input[placeholder*='Search']",
+			"description": "Look for a search field",
+			"timeout": 5000,
+			"optional": true,
+			"condition": {
+				"exists": "input[type='search'], input[placeholder*='search'], input[placeholder*='Search']"
+			},
+			"nextStep": "searchRestaurant"
+		},
+		"searchRestaurant": {
+			"action": "fill",
+			"selector": "input[type='search'], input[placeholder*='search'], input[placeholder*='Search']",
+			"value": "{{name}}",
+			"description": "Enter restaurant name in search field",
+			"nextStep": "clickSearch"
+		},
+		"clickSearch": {
+			"action": "click",
+			"selector": "button[type='submit'], [aria-label='Search']",
+			"description": "Click search button",
+			"waitForNavigation": true,
+			"nextStep": "lookForDateField"
+		},
+		"lookForDateField": {
+			"action": "waitForSelector",
+			"selector": "input[type='date'], [aria-label*='date'], [placeholder*='date']",
+			"description": "Look for date input field",
+			"timeout": 5000,
+			"nextStep": "enterDate"
+		},
+		"enterDate": {
+			"action": "fill",
+			"selector": "input[type='date'], [aria-label*='date'], [placeholder*='date']",
+			"value": "{{date}}",
+			"description": "Enter date",
+			"nextStep": "lookForTimeField"
+		},
+		"lookForTimeField": {
+			"action": "waitForSelector",
+			"selector": "input[type='time'], select[aria-label*='time'], [placeholder*='time']",
+			"description": "Look for time input field",
+			"timeout": 5000,
+			"nextStep": "enterTime"
+		},
+		"enterTime": {
+			"action": "fill",
+			"selector": "input[type='time'], select[aria-label*='time'], [placeholder*='time']",
+			"value": "{{time}}",
+			"description": "Enter time",
+			"nextStep": "lookForGuestsField"
+		},
+		"lookForGuestsField": {
+			"action": "waitForSelector",
+			"selector": "input[type='number'], select[aria-label*='guest'], [placeholder*='guest'], [aria-label*='people'], [placeholder*='people']",
+			"description": "Look for guests input field",
+			"timeout": 5000,
+			"nextStep": "enterGuests"
+		},
+		"enterGuests": {
+			"action": "fill",
+			"selector": "input[type='number'], select[aria-label*='guest'], [placeholder*='guest'], [aria-label*='people'], [placeholder*='people']",
+			"value": "{{guests}}",
+			"description": "Enter number of guests",
+			"nextStep": "lookForSubmitButton"
+		},
+		"lookForSubmitButton": {
+			"action": "waitForSelector",
+			"selector": "button[type='submit'], button:has-text('Find'), button:has-text('Search'), button:has-text('Book'), button:has-text('Reserve')",
+			"description": "Look for submit button",
+			"timeout": 5000,
+			"nextStep": "clickSubmit"
+		},
+		"clickSubmit": {
+			"action": "click",
+			"selector": "button[type='submit'], button:has-text('Find'), button:has-text('Search'), button:has-text('Book'), button:has-text('Reserve')",
+			"description": "Click submit button",
+			"waitForNavigation": true,
+			"nextStep": "checkHumanVerification"
+		},
+		"checkHumanVerification": {
+			"action": "waitForSelector",
+			"selector": "[aria-label*='captcha'], [aria-label*='Captcha'], iframe[src*='recaptcha'], iframe[src*='hcaptcha']",
+			"description": "Check if human verification is required",
+			"timeout": 3000,
+			"optional": true,
+			"condition": {
+				"exists": "[aria-label*='captcha'], [aria-label*='Captcha'], iframe[src*='recaptcha'], iframe[src*='hcaptcha']"
+			},
+			"nextStep": "handleHumanVerification"
+		},
+		"handleHumanVerification": {
+			"action": "humanVerification",
+			"description": "Pause for human verification",
+			"nextStep": "checkResults"
+		},
+		"checkResults": {
+			"action": "waitForSelector",
+			"selector": ".available, .unavailable, .no-availability, .success, .error",
+			"description": "Wait for availability results",
+			"timeout": 10000,
+			"nextStep": null
+		}
+	}
+}

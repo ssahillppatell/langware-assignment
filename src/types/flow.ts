@@ -17,6 +17,7 @@ export interface FlowStep {
 export interface FlowDefinition {
 	name: string;
 	baseUrl: string;
+	headless?: boolean;
 	startStep: string;
 	steps: Record<string, FlowStep>;
 }

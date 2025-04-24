@@ -1,110 +1,92 @@
 {
-    "name": "OnTopo Table Booking",
-    "baseUrl": "https://ontopo.com/en/us",
-    "startStep": "navigateToSearch",
-    "steps": {
-      "navigateToSearch": {
-        "action": "navigate",
-        "value": "https://ontopo.com/en/us",
-        "description": "Navigate to OnTopo homepage",
-        "waitForTime": 2000,
-        "nextStep": "clickOnSearchBar"
-      },
-      "clickOnSearchBar":{
-        "action": "click",
-        "selector": ".search",
-        "description": "Click on search bar",
-        "nextStep": "searchRestaurant"
-      },
-      "searchRestaurant": {
-        "action": "fill",
-        "selector": "input[placeholder='Search']",
-        "value": "{{name}}",
-        "description": "Enter restaurant name in search field",
-        "nextStep": "clickRestaurantResult"
-      },
-      "clickRestaurantResult": {
-        "action": "click",
-        "selector": ".results > .result:first-of-type",
-        "description": "Click on the first restaurant result",
-        "waitForTime": 2000,
-        "nextStep": "clickOnReservationButton"
-      },
-      "clickOnReservationButton": {
-        "action": "click",
-        "selector": ".venue-search-btn:first-of-type",
-        "description": "Click on reservation button",
-        "waitForTime": 3000,
-        "nextStep": "openGuestsDropdown"
-      },
-      "openGuestsDropdown": {
-        "action": "click",
-        "selector": ".table-button-group > button:nth-child(1)",
-        "description": "Open guest selector",
-        "waitForTime": 1000,
-        "nextStep": "selectPartySize"
-      },
-      "selectPartySize": {
-        "action": "click",
-        "selector": "#contentCardSection .dialog > div > div:nth-child({{guests}})",
-        "description": "Select number of guests",
-        "nextStep": "selectDate"
-      },
-      "selectDate": {
-        "action": "click",
-        "selector": ".date-picker button",
-        "description": "Open date picker",
-        "nextStep": "selectSpecificDate"
-      },
-      "selectSpecificDate": {
-        "action": "click",
-        "selector": "[aria-label='{{date}}']",
-        "description": "Select the specific date",
-        "optional": true,
-        "nextStep": "selectPartySize"
-      },
-      "selectTime": {
-        "action": "click",
-        "selector": ".time-slot-button:has-text('{{time}}')",
-        "description": "Select time slot",
-        "nextStep": "checkAvailability"
-      },
-      "checkAvailability": {
-        "action": "click",
-        "selector": "button:has-text('Find a table')",
-        "description": "Click to find available tables",
-        "waitForNavigation": true,
-        "nextStep": "checkResults"
-      },
-      "checkResults": {
-        "action": "waitForSelector",
-        "selector": ".available-times, .no-availability-message",
-        "description": "Wait for availability results",
-        "timeout": 10000,
-        "nextStep": "checkHumanVerification"
-      },
-      "checkHumanVerification": {
-        "action": "waitForSelector",
-        "selector": ".captcha-container",
-        "description": "Check if human verification is required",
-        "timeout": 3000,
-        "optional": true,
-        "condition": {
-          "exists": ".captcha-container"
-        },
-        "nextStep": "handleHumanVerification"
-      },
-      "handleHumanVerification": {
-        "action": "humanVerification",
-        "description": "Pause for human verification",
-        "nextStep": "verifyAvailability"
-      },
-      "verifyAvailability": {
-        "action": "waitForSelector",
-        "selector": ".available-times, .no-availability-message",
-        "description": "Verify availability after possible verification",
-        "timeout": 10000,
-        "nextStep": null
-      }
-    }
-  }
+	"name": "OnTopo Table Booking",
+	"baseUrl": "https://ontopo.com/en/us",
+	"startStep": "navigateToSearch",
+	"steps": {
+		"navigateToSearch": {
+			"action": "navigate",
+			"value": "https://ontopo.com/en/us",
+			"description": "Navigate to OnTopo homepage",
+			"waitForTime": 2000,
+			"nextStep": "clickOnSearchBar"
+		},
+		"clickOnSearchBar": {
+			"action": "click",
+			"selector": ".search",
+			"description": "Click on search bar",
+			"nextStep": "searchRestaurant"
+		},
+		"searchRestaurant": {
+			"action": "fill",
+			"selector": "input[placeholder='Search']",
+			"value": "{{name}}",
+			"description": "Enter restaurant name in search field",
+			"nextStep": "clickRestaurantResult"
+		},
+		"clickRestaurantResult": {
+			"action": "click",
+			"selector": ".results > .result:first-of-type",
+			"description": "Click on the first restaurant result",
+			"waitForTime": 2000,
+			"nextStep": "clickOnReservationButton"
+		},
+		"clickOnReservationButton": {
+			"action": "click",
+			"selector": ".venue-search-btn:first-of-type",
+			"description": "Click on reservation button",
+			"waitForTime": 3000,
+			"nextStep": "openGuestsDropdown"
+		},
+		"openGuestsDropdown": {
+			"action": "click",
+			"selector": ".table-button-group > button:nth-child(1)",
+			"description": "Open guest selector",
+			"waitForTime": 1000,
+			"nextStep": "selectPartySize"
+		},
+		"selectPartySize": {
+			"action": "click",
+			"selector": "#contentCardSection .dialog > div > div:nth-child({{guests}})",
+			"description": "Select number of guests",
+			"nextStep": "openDateDropdown"
+		},
+		"openDateDropdown": {
+			"action": "click",
+			"selector": ".table-button-group > button:nth-child(2)",
+			"description": "Open date picker",
+			"nextStep": "selectSpecificDate"
+		},
+		"selectSpecificDate": {
+			"action": "click",
+			"selector": "#date-1",
+			"description": "Select the specific date",
+			"nextStep": "openTimeDropdown"
+		},
+		"openTimeDropdown": {
+			"action": "click",
+			"selector": ".table-button-group > button:nth-child(3)",
+			"description": "Open time picker",
+			"nextStep": "selectTime"
+		},
+		"selectTime": {
+			"action": "click",
+			"selector": "#time-20",
+			"description": "Select time slot",
+			"nextStep": "checkAvailability"
+		},
+		"checkAvailability": {
+			"action": "click",
+			"selector": "button:has-text('Find me a table')",
+			"description": "Click to find available tables",
+			"waitForTime": 1000,
+			"nextStep": "checkResults"
+		},
+		"checkResults": {
+			"action": "waitForSelector",
+			"selector": ".availability-fallback",
+			"description": "Wait for availability results",
+			"timeout": 10000,
+			"nextStep": null
+		}
+	}
+}
