@@ -8,7 +8,6 @@ import type { BookingDetails } from "./types/booking";
 import type { FlowDefinition } from "./types/flow";
 import { log } from "./utils/log";
 
-// Define the command-line interface
 const program = new Command();
 
 program
@@ -35,17 +34,12 @@ program
 				process.exit(1);
 			}
 
-			// Extract domain from URL to find corresponding flow file
 			const domain = new URL(url).hostname.replace("www.", "");
 
-			// Look for a flow definition for this domain
-			const flowsDir = path.join(process.cwd(), "flows");
-			let flowFile = path.join(flowsDir, `${domain}.json`);
+			let flowFile = path.join(process.cwd(), "flows", `${domain}.json`);
 
-			// If no domain-specific flow exists, use default
 			if (!existsSync(flowFile)) {
-				log.warn(`No specific flow found for ${domain}, using default flow`);
-				flowFile = path.join(flowsDir, "default.json");
+				flowFile = path.join(process.cwd(), "flows", "default.json");
 
 				if (!existsSync(flowFile)) {
 					log.error("Default flow definition not found");
@@ -53,28 +47,24 @@ program
 				}
 			}
 
-			// Load flow definition
 			const flowDefinition: FlowDefinition = JSON.parse(
 				readFileSync(flowFile, "utf-8"),
 			);
 
-			// Execute the flow
 			log.info(
 				`Starting table availability check for ${name} on ${date} at ${time} for ${guests} guests`,
 			);
-			// If --ui flag is passed, disable headless mode (inverse of headless mode)
 			const executor = new FlowExecutor(flowDefinition, bookingDetails, {
 				headless: !options.ui,
 			});
 			const result = await executor.execute();
 
-			// Output result
 			if (result.success) {
 				log.success(result.message);
-				process.exit(0); // Exit with success code
+				process.exit(0); 
 			} else {
 				log.error(result.message);
-				process.exit(1); // Exit with error code
+				process.exit(1); 
 			}
 		} catch (error: unknown) {
 			if (error instanceof Error) {

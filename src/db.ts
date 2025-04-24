@@ -1,10 +1,8 @@
 import { Database } from "bun:sqlite";
 import { randomUUID } from 'crypto';
 
-// Initialize the database
 const db = new Database("bookings.sqlite", { create: true });
 
-// Create the bookings table if it doesn't exist
 db.run(`
   CREATE TABLE IF NOT EXISTS bookings (
     id TEXT PRIMARY KEY,
@@ -18,7 +16,6 @@ db.run(`
   );
 `);
 
-// Create a trigger to update updated_at on row update
 db.run(`
     CREATE TRIGGER IF NOT EXISTS update_bookings_updated_at
     AFTER UPDATE ON bookings FOR EACH ROW
@@ -38,18 +35,10 @@ export interface Booking {
     time: string;
     guests: number;
     status: BookingStatus;
-    created_at?: string; // Optional because DB defaults it
-    updated_at?: string; // Optional because DB defaults/updates it
+    created_at?: string; 
+    updated_at?: string; 
 }
 
-/**
- * Inserts a new booking record.
- * @param name - Name for the booking
- * @param date - Date of the booking
- * @param time - Time of the booking
- * @param guests - Number of guests
- * @returns The ID of the newly created booking.
- */
 export async function createBooking(name: string, date: string, time: string, guests: number): Promise<string> {
     const id = randomUUID();
     const status: BookingStatus = 'pending';
@@ -63,15 +52,10 @@ export async function createBooking(name: string, date: string, time: string, gu
         return id;
     } catch (error) {
         console.error("Error creating booking:", error);
-        throw error; // Re-throw the error for the caller to handle
+        throw error; 
     }
 }
 
-/**
- * Updates the status of an existing booking.
- * @param id - The UUID of the booking to update.
- * @param status - The new status for the booking.
- */
 export async function updateBookingStatus(id: string, status: BookingStatus): Promise<void> {
      try {
         const query = db.query(`
@@ -80,9 +64,7 @@ export async function updateBookingStatus(id: string, status: BookingStatus): Pr
       WHERE id = $id;
     `);
         const result = query.run({ $id: id, $status: status });
-        // Bun's run() return type doesn't directly expose changes,
-        // but we can infer success if no error is thrown.
-        if (result) { // Basic check if query execution object is returned
+        if (result) { 
              console.log(`Booking status updated for ID: ${id} to ${status}`);
         } else {
              console.warn(`Booking status update might not have affected any rows for ID: ${id}`);
@@ -94,12 +76,7 @@ export async function updateBookingStatus(id: string, status: BookingStatus): Pr
     }
 }
 
-/**
- * Retrieves a booking by its ID.
- * @param id - The UUID of the booking to retrieve.
- * @returns The booking object or null if not found.
- */
-export function getBookingById(id: string): Booking | null { // Keep sync for now unless needed async
+export function getBookingById(id: string): Booking | null { 
     try {
         const query = db.query<Booking, { $id: string }>(`
             SELECT id, name, date, time, guests, status, created_at, updated_at
@@ -107,16 +84,11 @@ export function getBookingById(id: string): Booking | null { // Keep sync for no
             WHERE id = $id;
         `);
         const booking = query.get({ $id: id });
-        return booking ?? null; // Return the found booking or null
+        return booking ?? null; 
     } catch (error) {
         console.error(`Error retrieving booking by ID ${id}:`, error);
-        throw error; // Re-throw the error
+        throw error; 
     }
 }
 
-
-// Optional: Close the database connection when the application exits
-// Note: Bun might handle this automatically, but explicit cleanup is good practice
-// process.on('exit', () => db.close());
-
-export default db; // Export the db instance if needed directly elsewhere
+export default db; 

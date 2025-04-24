@@ -1,0 +1,31 @@
+# Git files
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Node modules (installed within Dockerfile)
+node_modules
+
+# Build output (created within Dockerfile)
+dist
+
+# Local database (should be mounted as a volume if needed)
+*.sqlite
+
+# IDE/Editor specific
+.vscode
+.idea
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test reports
+coverage
+*.lcov

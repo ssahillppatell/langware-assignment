@@ -27,7 +27,6 @@ export class BrowserManager {
 	async click(selector: string, timeout = 5000): Promise<void> {
 		if (!this.page) throw new Error("Browser not initialized");
 		await this.page.waitForSelector(selector, { timeout });
-		// bubble up the click event
 		await this.page.click(selector);
 	}
 
@@ -64,13 +63,9 @@ export class BrowserManager {
 
 	async getHumanVerification(): Promise<void> {
 		if (!this.page) throw new Error("Browser not initialized");
-		// Pause automation to allow manual intervention
-		console.log(
-			"\n❗ Human verification required. Please complete the verification in the browser window.",
-		);
+		console.log("\n Human verification required. Please complete the verification in the browser window.");
 		console.log("Press Enter after completing verification to continue...");
 
-		// Make browser visible
 		if (this.browser) {
 			const context = this.page.context();
 			await context.close();
@@ -79,7 +74,6 @@ export class BrowserManager {
 			await this.page.goto(await this.getCurrentUrl());
 		}
 
-		// Wait for user input
 		await new Promise((resolve) => {
 			process.stdin.once("data", () => {
 				resolve(true);

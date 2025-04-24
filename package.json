@@ -6,8 +6,7 @@
 	"scripts": {
 		"check:fix": "bunx biome check --fix",
 		"start": "bun run src/index.ts",
-		"dev": "bun run src/index.ts --watch",
-		"build": "bun build src/index.ts --outdir ./dist --target bun"
+		"dev": "bun run src/index.ts --watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",

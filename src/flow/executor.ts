@@ -3,7 +3,7 @@ import type { FlowDefinition, FlowStep } from "../types/flow";
 
 import { BrowserManager } from "../bot/browser";
 import { log } from "../utils/log";
-import { createBooking, updateBookingStatus } from "../db"; // Added import
+import { createBooking, updateBookingStatus } from "../db";
 
 export class FlowExecutor {
 	private browser: BrowserManager;
@@ -20,10 +20,6 @@ export class FlowExecutor {
 		this.flow = flow;
 		this.bookingDetails = bookingDetails;
 
-		// Set headless mode with the following precedence:
-		// 1. constructor options.headless
-		// 2. flow definition headless property
-		// 3. default to true (headless mode)
 		const optionsHeadless = options?.headless;
 		this.headless =
 			optionsHeadless !== undefined
@@ -36,13 +32,11 @@ export class FlowExecutor {
 	async execute(): Promise<ExecutionResult> {
 		log.info(`Executing flow: ${this.flow.name}`);
 
-		// Declare bookingId here to be accessible in try/catch/finally
 		let bookingId: string | null = null;
 
 		try {
-			await this.browser.initialize(this.headless); // Set to false for visible browser, true for headless
+			await this.browser.initialize(this.headless);
 
-			// Create initial booking record
 			try {
 				bookingId = await createBooking(
 					this.bookingDetails.name,
@@ -53,16 +47,12 @@ export class FlowExecutor {
 				log.info(`Booking created with ID: ${bookingId}`);
 			} catch (dbError) {
 				log.error("Failed to create initial booking record:", dbError);
-				// Decide if we should stop execution if booking fails
-				// For now, we'll log and continue, but the ID will be null
 			}
 
-			// Start by navigating to the base URL or the provided URL
 			const startUrl = this.bookingDetails.url || this.flow.baseUrl;
 			log.info(`Starting flow at URL: ${startUrl}`);
 			await this.browser.navigateTo(startUrl);
 
-			// Begin execution at the starting step
 			let currentStepKey: string | null = this.flow.startStep;
 			let continueExecution = true;
 
@@ -80,7 +70,6 @@ export class FlowExecutor {
 					`Executing step: ${currentStepKey} - ${currentStep.description || currentStep.action}`,
 				);
 
-				// Check conditions before executing the step
 				if (currentStep.condition) {
 					const conditionMet = await this.evaluateCondition(currentStep);
 					if (!conditionMet) {
@@ -90,32 +79,26 @@ export class FlowExecutor {
 					}
 				}
 
-				// Execute the step
 				try {
 					await this.executeStep(currentStep);
 				} catch (error) {
 					if (currentStep.optional) {
-						if (error instanceof Error) {
-							log.warn(
-								`Optional step failed: ${currentStepKey} - ${error.message}`,
-							);
-						}
+						log.warn(
+							`Optional step failed: ${currentStepKey} - ${error instanceof Error ? error.message : String(error)}`,
+						);
 					} else {
 						throw error;
 					}
 				}
 
-				// Move to the next step
 				currentStepKey = currentStep.nextStep || null;
 
-				// If there's no next step, we've reached the end
 				if (!currentStepKey) {
 					continueExecution = false;
 				}
 			}
 
 			log.success("Flow execution completed successfully");
-			// Update booking status to 'found' on successful completion
 			if (bookingId) {
 				await updateBookingStatus(bookingId, "found");
 			}
@@ -127,8 +110,9 @@ export class FlowExecutor {
 		} catch (error) {
 			if (error instanceof Error) {
 				log.error(`Flow execution failed: ${error.message}`);
+			} else {
+				log.error(`Flow execution failed: ${String(error)}`);
 			}
-			// Update booking status to 'error' on failure
 			if (bookingId) {
 				await updateBookingStatus(bookingId, "error");
 			}
@@ -155,12 +139,10 @@ export class FlowExecutor {
 		const value = this.resolveValue(step.value);
 		const timeout = step.timeout || 5000;
 
-		// Find current step key by comparing step object with steps in flow
 		const currentStepKey = Object.entries(this.flow.steps).find(
 			([_, stepValue]) => stepValue === step,
 		)?.[0];
 
-		// Check if this is the checkResults step and the selector exists
 		if (currentStepKey === "checkResults" && selector) {
 			const selectorExists = await this.browser.elementExists(selector);
 			if (selectorExists) {
@@ -211,12 +193,10 @@ export class FlowExecutor {
 				throw new Error(`Unknown action: ${action}`);
 		}
 
-		// Wait for the selector if specified
 		if (step.waitForTime) {
 			await new Promise((resolve) => setTimeout(resolve, step.waitForTime));
 		}
 
-		// Wait for navigation if specified
 		if (step.waitForNavigation) {
 			await this.browser.waitForNavigation();
 		}
@@ -225,7 +205,6 @@ export class FlowExecutor {
 	private resolveValue(value: string | undefined): string {
 		if (!value) return "";
 
-		// Replace placeholder variables with actual booking details
 		return value
 			.replace("{{name}}", this.bookingDetails.name)
 			.replace("{{date}}", this.bookingDetails.date)
