@@ -6,11 +6,12 @@ const db = new Database("bookings.sqlite", { create: true });
 db.run(`
   CREATE TABLE IF NOT EXISTS bookings (
     id TEXT PRIMARY KEY,
-    name TEXT,
-    date TEXT,
-    time TEXT,
-    guests INTEGER,
-    status TEXT CHECK(status IN ('pending', 'error', 'found', 'not-found')),
+    name TEXT NOT NULL,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    guests INTEGER NOT NULL,
+    status TEXT CHECK(status IN ('pending', 'found', 'not_found', 'error')) NOT NULL DEFAULT 'pending',
+    options TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
@@ -35,19 +36,30 @@ export interface Booking {
     time: string;
     guests: number;
     status: BookingStatus;
+    options?: string; // Store as JSON string
     created_at?: string; 
     updated_at?: string; 
 }
 
-export async function createBooking(name: string, date: string, time: string, guests: number): Promise<string> {
+/**
+ * Creates a new booking record in the database.
+ * @returns The ID of the newly created booking.
+ */
+export async function createBooking(
+    name: string,
+    date: string,
+    time: string,
+    guests: number,
+    options?: string,
+): Promise<string> {
     const id = randomUUID();
     const status: BookingStatus = 'pending';
     try {
         const query = db.query(`
-      INSERT INTO bookings (id, name, date, time, guests, status)
-      VALUES ($id, $name, $date, $time, $guests, $status);
+      INSERT INTO bookings (id, name, date, time, guests, status, options)
+      VALUES ($id, $name, $date, $time, $guests, $status, $options);
     `);
-        query.run({ $id: id, $name: name, $date: date, $time: time, $guests: guests, $status: status });
+        query.run({ $id: id, $name: name, $date: date, $time: time, $guests: guests, $status: status, $options: options ?? null });
         console.log(`Booking created with ID: ${id}`);
         return id;
     } catch (error) {
@@ -79,7 +91,7 @@ export async function updateBookingStatus(id: string, status: BookingStatus): Pr
 export function getBookingById(id: string): Booking | null { 
     try {
         const query = db.query<Booking, { $id: string }>(`
-            SELECT id, name, date, time, guests, status, created_at, updated_at
+            SELECT id, name, date, time, guests, status, options, created_at, updated_at
             FROM bookings
             WHERE id = $id;
         `);

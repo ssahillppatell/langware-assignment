@@ -3,7 +3,7 @@ import type { FlowDefinition, FlowStep } from "../types/flow";
 
 import { BrowserManager } from "../bot/browser";
 import { log } from "../utils/log";
-import { createBooking, updateBookingStatus } from "../db";
+import { updateBookingStatus } from "../db";
 
 export class FlowExecutor {
 	private browser: BrowserManager;
@@ -29,25 +29,11 @@ export class FlowExecutor {
 					: true;
 	}
 
-	async execute(): Promise<ExecutionResult> {
+	async execute(bookingId: string | null): Promise<ExecutionResult> {
 		log.info(`Executing flow: ${this.flow.name}`);
-
-		let bookingId: string | null = null;
 
 		try {
 			await this.browser.initialize(this.headless);
-
-			try {
-				bookingId = await createBooking(
-					this.bookingDetails.name,
-					this.bookingDetails.date,
-					this.bookingDetails.time,
-					this.bookingDetails.guests,
-				);
-				log.info(`Booking created with ID: ${bookingId}`);
-			} catch (dbError) {
-				log.error("Failed to create initial booking record:", dbError);
-			}
 
 			const startUrl = this.bookingDetails.url || this.flow.baseUrl;
 			log.info(`Starting flow at URL: ${startUrl}`);

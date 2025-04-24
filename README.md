@@ -65,14 +65,14 @@ Booking attempts and their final status (pending, found, error) are logged in a 
     ```
 3.  **Run the bot:**
     ```bash
-    bun run src/index.ts <url> <name> <date> <time> <guests> [--ui]
+    bun run src/index.ts <url> <name> <date> <time> <guests> [--no-headless]
     ```
     *   **`<url>`:** Full URL of the restaurant booking page.
     *   **`<name>`:** Name of the restaurant (used for logging).
     *   **`<date>`:** Desired date (YYYY-MM-DD).
     *   **`<time>`:** Desired time (HH:MM, 24-hour format).
     *   **`<guests>`:** Number of guests (positive integer).
-    *   **`--ui` (Optional):** Runs the browser in non-headless mode so you can see the automation.
+    *   **`--no-headless` (Optional):** Runs with a visible browser window. If omitted, runs in headless mode by default.
 
     **Example:**
     ```bash
@@ -86,7 +86,7 @@ Flows define the sequence of actions the bot takes on a specific website. Each f
 *   `name`: A descriptive name for the flow.
 *   `baseUrl`: (Optional) A base URL for the site.
 *   `startStep`: The key of the first step to execute.
-*   `headless`: (Optional) Boolean to suggest default headless mode (true/false). Overridden by `--ui` flag and constructor options.
+*   `headless`: (Optional) Boolean to suggest default headless mode (true/false). Overridden by `--no-headless` flag and constructor options.
 *   `steps`: An object where keys are step names and values are step definitions.
 
 Each **step definition** can include:
