@@ -1,21 +1,30 @@
 import path from "node:path";
 import type { ServeOptions, Server } from "bun";
+import type { BotRunOptions } from "./index";
 import type { BookingDetails } from "./types/booking";
 import { log } from "./utils/log";
 
-// Define the type for the function that runs the bot task
 type RunBotTaskFn = (
 	bookingDetails: BookingDetails,
-	cliOptions: { headless?: boolean },
+	opts: BotRunOptions,
 ) => Promise<{ success: boolean; message: string }>;
 
 let serverInstance: Server | null = null;
+let serverRunOptions: BotRunOptions | null = null;
 
-export async function startServer(runBotTask: RunBotTaskFn) {
+export async function startServer(
+	runBotTask: RunBotTaskFn,
+	initialOptions: BotRunOptions,
+) {
 	if (serverInstance) {
 		log.warn("Server already running.");
 		return;
 	}
+
+	serverRunOptions = initialOptions;
+	log.info(
+		`Server started with initial options: ${JSON.stringify(serverRunOptions)}`,
+	);
 
 	const uiDir = path.join(process.cwd(), "src/ui");
 
@@ -26,7 +35,6 @@ export async function startServer(runBotTask: RunBotTaskFn) {
 			log.debug(`[Server] Received request: ${req.method} ${url.pathname}`);
 
 			try {
-				// Serve static files (HTML, CSS, JS)
 				if (req.method === "GET") {
 					let filePath = "";
 					if (url.pathname === "/") {
@@ -48,7 +56,6 @@ export async function startServer(runBotTask: RunBotTaskFn) {
 					}
 				}
 
-				// Handle bot execution request
 				if (req.method === "POST" && url.pathname === "/run-bot") {
 					log.info("[Server] Received /run-bot request");
 					const data = (await req.json()) as {
@@ -59,7 +66,6 @@ export async function startServer(runBotTask: RunBotTaskFn) {
 						guests: string;
 					};
 
-					// Basic validation (add more robust checks as needed)
 					if (
 						!data.url ||
 						!data.name ||
@@ -88,9 +94,15 @@ export async function startServer(runBotTask: RunBotTaskFn) {
 						guests: Number.parseInt(data.guests, 10),
 					};
 
-					// Run the bot task (defaulting to non-headless for UI mode)
-					log.info("[Server] Calling runBotTask...");
-					const result = await runBotTask(bookingDetails, { headless: false }); // Default to visible browser for UI
+					const taskOptions: BotRunOptions = {
+						mode: "ui",
+						headless: false,
+					};
+
+					log.info(
+						`[Server] Calling runBotTask with options: ${JSON.stringify(taskOptions)}`,
+					);
+					const result = await runBotTask(bookingDetails, taskOptions);
 					log.info("[Server] runBotTask completed, result:", result.message);
 
 					return new Response(JSON.stringify(result), {
@@ -98,7 +110,6 @@ export async function startServer(runBotTask: RunBotTaskFn) {
 					});
 				}
 
-				// Fallback for unhandled routes
 				log.warn(`[Server] Unhandled route: ${req.method} ${url.pathname}`);
 				return new Response("Not Found", { status: 404 });
 			} catch (error) {
@@ -123,7 +134,7 @@ export async function startServer(runBotTask: RunBotTaskFn) {
 		log.success(`Server listening on http://localhost:${serverOptions.port}`);
 	} catch (e) {
 		log.error("Failed to start server:", e);
-		throw e; // Re-throw to be caught in index.ts
+		throw e;
 	}
 }
 
@@ -137,7 +148,6 @@ export function stopServer() {
 	}
 }
 
-// Handle process termination signals to stop the server gracefully
 process.on("SIGINT", () => {
 	log.info("SIGINT signal received. Stopping server...");
 	stopServer();

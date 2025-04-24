@@ -1,19 +1,25 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Command } from "commander";
-import { createBooking, updateBookingStatus } from "./db";
+import { createBooking, initializeDb, updateBookingStatus } from "./db";
 import { FlowExecutor } from "./flow/executor";
 import type { BookingDetails } from "./types/booking";
 import type { FlowDefinition } from "./types/flow";
 import { log } from "./utils/log";
 
-// --- Reusable Bot Task Function ---
+export type BotRunOptions = {
+	headless: boolean;
+	mode: "cli" | "ui";
+};
+
+initializeDb();
+
 async function runBotTask(
 	bookingDetails: BookingDetails,
-	cliOptions: { headless?: boolean },
+	options: BotRunOptions,
 ) {
 	log.info(
-		`Starting table availability check for ${bookingDetails.name} on ${bookingDetails.date} at ${bookingDetails.time} for ${bookingDetails.guests} guests`,
+		`Starting table availability check for ${bookingDetails.name} on ${bookingDetails.date} at ${bookingDetails.time} for ${bookingDetails.guests} guests (Mode: ${options.mode}, Headless: ${options.headless})`,
 	);
 
 	const domain = new URL(bookingDetails.url).hostname.replace("www.", "");
@@ -33,10 +39,7 @@ async function runBotTask(
 		readFileSync(flowFile, "utf-8"),
 	);
 
-	// Determine headless mode based on CLI options (default to true if undefined)
-	const runHeadless =
-		cliOptions.headless === undefined ? true : cliOptions.headless;
-	const optionsString = JSON.stringify({ headless: runHeadless });
+	const optionsString = JSON.stringify(options);
 
 	let bookingId: string | null = null;
 	try {
@@ -47,18 +50,9 @@ async function runBotTask(
 			bookingDetails.guests,
 			optionsString,
 		);
-	} catch (dbError: unknown) {
-		if (dbError instanceof Error) {
-			log.error(`Database error during booking creation: ${dbError.message}`);
-		} else {
-			log.error("Database error during booking creation: Unknown error");
-		}
-		throw new Error("Failed to create booking record.");
-	}
 
-	try {
 		const executor = new FlowExecutor(flowDefinition, bookingDetails, {
-			headless: runHeadless,
+			headless: options.headless,
 		});
 		const result = await executor.execute(bookingId);
 
@@ -90,7 +84,6 @@ async function runBotTask(
 	}
 }
 
-// --- CLI Setup ---
 const program = new Command();
 
 program
@@ -127,13 +120,19 @@ program
 			date,
 			time,
 			guests,
-			options: { headless?: boolean; ui?: boolean },
+			cmdOptions: { noHeadless?: boolean; ui?: boolean },
 		) => {
-			if (options.ui) {
+			const runHeadless = cmdOptions.noHeadless === undefined;
+
+			if (cmdOptions.ui) {
 				log.info("Launching Web UI mode...");
 				try {
 					const { startServer } = await import("./server");
-					await startServer(runBotTask);
+					const startOptions: BotRunOptions = {
+						headless: runHeadless,
+						mode: "ui",
+					};
+					await startServer(runBotTask, startOptions);
 				} catch (serverError) {
 					log.error("Failed to start UI server:", serverError);
 					process.exit(1);
@@ -175,9 +174,12 @@ program
 						guests: parsedGuests,
 					};
 
-					const result = await runBotTask(bookingDetails, {
-						headless: options.headless,
-					});
+					const runOptions: BotRunOptions = {
+						headless: runHeadless,
+						mode: "cli",
+					};
+
+					const result = await runBotTask(bookingDetails, runOptions);
 
 					process.exit(result.success ? 0 : 1);
 				} catch (error: unknown) {

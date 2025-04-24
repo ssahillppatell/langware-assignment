@@ -28,22 +28,54 @@ Booking attempts and their final status (pending, found, error) are logged in a 
 ## Project Structure
 
 ```
-├── flows/               # Contains JSON flow definitions for websites
+/langware-assignment
+├── flows/                  # JSON definitions for website interaction flows
 │   ├── default.json
-│   └── ontopo.com.json  # Example domain-specific flow
-├── src/                 # Source code
-│   ├── bot/             # Browser automation logic (Playwright wrapper)
-│   ├── flow/            # Flow execution logic
-│   ├── types/           # TypeScript type definitions
-│   ├── utils/           # Utility functions (e.g., logging)
-│   ├── db.ts            # SQLite database setup and operations
-│   └── index.ts         # Main entry point, CLI setup
-├── bookings.sqlite      # Local SQLite database file
-├── package.json         # Project metadata and dependencies
-├── bun.lockb            # Bun lockfile
-├── tsconfig.json        # TypeScript configuration
-└── README.md            # This file
+│   └── ontopo.com.json
+├── src/
+│   ├── bot/                # Core browser automation logic
+│   │   └── browser.ts
+│   ├── db/                 # Database interaction logic
+│   │   └── index.ts
+│   ├── flow/               # Flow execution logic
+│   │   └── executor.ts
+│   ├── types/              # TypeScript type definitions
+│   │   ├── booking.ts
+│   │   └── flow.ts
+│   ├── ui/                 # Static files for the web UI
+│   │   ├── index.html
+│   │   ├── script.js
+│   │   └── style.css
+│   ├── utils/              # Utility functions (e.g., logging)
+│   │   └── log.ts
+│   ├── index.ts            # Main entry point (CLI argument parsing, starts bot/server)
+│   └── server.ts           # Bun web server for the UI mode
+├── .gitignore
+├── bookings.sqlite         # SQLite database file (created on first run)
+├── bun.lock
+├── package.json
+├── README.md
+└── tsconfig.json
 ```
+
+## Database
+
+Booking attempts and their final status are logged in a local SQLite database file named `bookings.sqlite`, created in the project root directory.
+
+**`bookings` Table Schema:**
+
+| Column      | Type      | Description                                                                 |
+| :---------- | :-------- | :-------------------------------------------------------------------------- |
+| `id`        | `TEXT`    | Primary Key (UUID)                                                          |
+| `url`       | `TEXT`    | The booking URL provided by the user                                        |
+| `name`      | `TEXT`    | The restaurant name provided by the user                                    |
+| `date`      | `TEXT`    | The requested date (YYYY-MM-DD)                                             |
+| `time`      | `TEXT`    | The requested time (HH:MM)                                                  |
+| `guests`    | `INTEGER` | The requested number of guests                                              |
+| `status`    | `TEXT`    | Final status: 'pending', 'found', 'error'                                   |
+| `options`   | `TEXT`    | JSON string storing run options (e.g., `{"headless":true,"mode":"cli"}`) |
+| `created_at`| `DATETIME`| Timestamp when the record was created                                       |
+| `updated_at`| `DATETIME`| Timestamp when the record was last updated (status change)                  |
 
 ## Getting Started
 
@@ -86,10 +118,6 @@ There are two ways to run the bot:
     *   Open the URL in your web browser.
     *   Fill in the form fields (URL, Name, Date, Time, Guests) and click "Find Tables".
     *   The result (success or error message) will be displayed on the web page.
-
-### Database
-
-Booking attempts and their final status (pending, found, error) are logged in a local SQLite database (`bookings.sqlite`).
 
 ## Flow Definitions (`flows/*.json`)
 

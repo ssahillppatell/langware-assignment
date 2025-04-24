@@ -3,29 +3,35 @@ import { randomUUID } from "node:crypto";
 
 const db = new Database("bookings.sqlite", { create: true });
 
-db.run(`
-  CREATE TABLE IF NOT EXISTS bookings (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    date TEXT NOT NULL,
-    time TEXT NOT NULL,
-    guests INTEGER NOT NULL,
-    status TEXT CHECK(status IN ('pending', 'found', 'not_found', 'error')) NOT NULL DEFAULT 'pending',
-    options TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-`);
+export function initializeDb() {
+	try {
+		db.run(`
+      CREATE TABLE IF NOT EXISTS bookings (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        date TEXT NOT NULL,
+        time TEXT NOT NULL,
+        guests INTEGER NOT NULL,
+        status TEXT CHECK(status IN ('pending', 'found', 'not_found', 'error')) NOT NULL DEFAULT 'pending',
+        options TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
 
-db.run(`
-    CREATE TRIGGER IF NOT EXISTS update_bookings_updated_at
-    AFTER UPDATE ON bookings FOR EACH ROW
-    BEGIN
-        UPDATE bookings SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
-    END;
-`);
+		db.run(`
+      CREATE TRIGGER IF NOT EXISTS update_bookings_updated_at
+      AFTER UPDATE ON bookings FOR EACH ROW
+      BEGIN
+          UPDATE bookings SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
+      END;
+    `);
 
-console.log("Database initialized and bookings table ensured.");
+		console.log("Database initialized and bookings table ensured.");
+	} catch (error) {
+		console.error("Error initializing database:", error);
+	}
+}
 
 export type BookingStatus = "pending" | "error" | "found" | "not-found";
 
@@ -36,15 +42,11 @@ export interface Booking {
 	time: string;
 	guests: number;
 	status: BookingStatus;
-	options?: string; // Store as JSON string
+	options?: string;
 	created_at?: string;
 	updated_at?: string;
 }
 
-/**
- * Creates a new booking record in the database.
- * @returns The ID of the newly created booking.
- */
 export async function createBooking(
 	name: string,
 	date: string,
