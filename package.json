@@ -1,0 +1,30 @@
+{
+  "name": "langware-assignment",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "check:fix": "bunx biome check --fix",
+    "start": "bun run src/index.ts",
+    "dev": "bun run src/index.ts --watch",
+    "build": "bun build src/index.ts --outdir ./dist --target bun"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@playwright/test": "^1.52.0",
+    "@types/bun": "latest",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.14.1",
+    "electron": "^35.2.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "consola": "^3.4.2",
+    "fs-extra": "^11.3.0",
+    "playwright": "^1.52.0"
+  }
+}
