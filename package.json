@@ -12,7 +12,6 @@
 		"@biomejs/biome": "1.9.4",
 		"@playwright/test": "^1.52.0",
 		"@types/bun": "latest",
-		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^22.14.1",
 		"electron": "^35.2.1"
 	},
@@ -23,7 +22,6 @@
 		"chalk": "^5.4.1",
 		"commander": "^13.1.0",
 		"consola": "^3.4.2",
-		"fs-extra": "^11.3.0",
 		"playwright": "^1.52.0"
 	}
 }

@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Command } from "commander";
@@ -20,19 +18,34 @@ program
 	.argument("<guests>", "Number of guests")
 	.option("--ui", "Run with visible browser UI (disable headless mode)")
 	.action(async (url, name, date, time, guests, options: { ui?: boolean }) => {
+		// Input Validation
+		const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+		const timeRegex = /^\d{2}:\d{2}$/;
+
+		if (!dateRegex.test(date)) {
+			log.error("Invalid date format. Please use YYYY-MM-DD.");
+			process.exit(1);
+		}
+
+		if (!timeRegex.test(time)) {
+			log.error("Invalid time format. Please use HH:MM (24-hour format).");
+			process.exit(1);
+		}
+
+		const parsedGuests = Number.parseInt(guests, 10);
+		if (Number.isNaN(parsedGuests) || parsedGuests <= 0) {
+			log.error("Number of guests must be a positive number");
+			process.exit(1);
+		}
+
 		try {
 			const bookingDetails: BookingDetails = {
 				url,
 				name,
 				date,
 				time,
-				guests: Number.parseInt(guests, 10),
+				guests: parsedGuests,
 			};
-
-			if (Number.isNaN(bookingDetails.guests) || bookingDetails.guests <= 0) {
-				log.error("Number of guests must be a positive number");
-				process.exit(1);
-			}
 
 			const domain = new URL(url).hostname.replace("www.", "");
 
