@@ -3,6 +3,7 @@ import type { FlowDefinition, FlowStep } from "../types/flow";
 
 import { BrowserManager } from "../bot/browser";
 import { updateBookingStatus } from "../db";
+import { formatDate, formatTime } from "../utils/date";
 import { log } from "../utils/log";
 
 export class FlowExecutor {
@@ -193,8 +194,14 @@ export class FlowExecutor {
 
 		return value
 			.replace("{{name}}", this.bookingDetails.name)
-			.replace("{{date}}", this.bookingDetails.date)
-			.replace("{{time}}", this.bookingDetails.time)
+			.replace(
+				"{{date}}",
+				formatDate(this.bookingDetails.date, this.flow.dateFormat),
+			)
+			.replace(
+				"{{time}}",
+				formatTime(this.bookingDetails.time, this.flow.timeFormat),
+			)
 			.replace("{{guests}}", this.bookingDetails.guests.toString());
 	}
 }

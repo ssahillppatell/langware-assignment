@@ -50,30 +50,21 @@
 			"action": "click",
 			"selector": "#contentCardSection .dialog > div > div:nth-child({{guests}})",
 			"description": "Select number of guests",
-			"nextStep": "openDateDropdown"
-		},
-		"openDateDropdown": {
-			"action": "click",
-			"selector": ".table-button-group > button:nth-child(2)",
-			"description": "Open date picker",
+			"waitForTime": 1000,
 			"nextStep": "selectSpecificDate"
 		},
 		"selectSpecificDate": {
 			"action": "click",
-			"selector": "#date-1",
+			"selector": "[id^=date-]:has-text('{{date}}')",
 			"description": "Select the specific date",
-			"nextStep": "openTimeDropdown"
-		},
-		"openTimeDropdown": {
-			"action": "click",
-			"selector": ".table-button-group > button:nth-child(3)",
-			"description": "Open time picker",
+			"waitForTime": 1000,
 			"nextStep": "selectTime"
 		},
 		"selectTime": {
 			"action": "click",
-			"selector": "#time-20",
+			"selector": "[id^=time-]:has-text('{{time}}')",
 			"description": "Select time slot",
+			"waitForTime": 1000,
 			"nextStep": "checkAvailability"
 		},
 		"checkAvailability": {
