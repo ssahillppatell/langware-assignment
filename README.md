@@ -23,6 +23,7 @@ Booking attempts and their final status (pending, found, error) are logged in a 
 *   **Browser Automation:** Playwright
 *   **Command-Line Interface:** Commander.js
 *   **Database:** SQLite (via `bun:sqlite`)
+*   **Date Handling:** Day.js
 *   **Logging:** Consola, Chalk
 
 ## Project Structure
@@ -31,7 +32,7 @@ Booking attempts and their final status (pending, found, error) are logged in a 
 /langware-assignment
 ├── flows/                  # JSON definitions for website interaction flows
 │   ├── default.json
-│   └── ontopo.com.json
+│   └── ontopo.com.json     # Flow with custom date/time formats
 ├── src/
 │   ├── bot/                # Core browser automation logic
 │   │   └── browser.ts
@@ -41,13 +42,14 @@ Booking attempts and their final status (pending, found, error) are logged in a 
 │   │   └── executor.ts
 │   ├── types/              # TypeScript type definitions
 │   │   ├── booking.ts
-│   │   └── flow.ts
+│   │   └── flow.ts         # Includes dateFormat and timeFormat properties
 │   ├── ui/                 # Static files for the web UI
 │   │   ├── index.html
 │   │   ├── script.js
 │   │   └── style.css
-│   ├── utils/              # Utility functions (e.g., logging)
-│   │   └── log.ts
+│   ├── utils/              # Utility functions
+│   │   ├── date.ts         # Date/time formatting and validation
+│   │   └── log.ts          # Logging utilities
 │   ├── index.ts            # Main entry point (CLI argument parsing, starts bot/server)
 │   └── server.ts           # Bun web server for the UI mode
 ├── .gitignore
