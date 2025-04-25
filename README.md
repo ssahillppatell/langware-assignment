@@ -69,8 +69,8 @@ Booking attempts and their final status are logged in a local SQLite database fi
 | `id`        | `TEXT`    | Primary Key (UUID)                                                          |
 | `url`       | `TEXT`    | The booking URL provided by the user                                        |
 | `name`      | `TEXT`    | The restaurant name provided by the user                                    |
-| `date`      | `TEXT`    | The requested date (YYYY-MM-DD)                                             |
-| `time`      | `TEXT`    | The requested time (HH:MM)                                                  |
+| `date`      | `TEXT`    | The requested date (format depends on flow definition, e.g., "Saturday, April 26" for ontopo.com) |
+| `time`      | `TEXT`    | The requested time (format depends on flow definition, e.g., "08:00 PM" for ontopo.com) |
 | `guests`    | `INTEGER` | The requested number of guests                                              |
 | `status`    | `TEXT`    | Final status: 'pending', 'found', 'error'                                   |
 | `options`   | `TEXT`    | JSON string storing run options (e.g., `{"headless":true,"mode":"cli"}`) |
@@ -83,6 +83,26 @@ Booking attempts and their final status are logged in a local SQLite database fi
 
 *   Bun installed ([Installation Guide](https://bun.sh/docs/installation))
 *   Git
+*   Playwright installed via `bunx playwright install chromium` (for Chromium browser support)
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/ssahillppatell/langware-assignment.git
+   cd langware-assignment
+   ```
+
+2. Install dependencies
+   ```bash
+   bun install
+   ```
+
+3. Install Playwright browsers
+   ```bash
+   bunx playwright install chromium
+   ```
+   Note: The bot uses Chromium by default. If you want to use a different browser, you'll need to modify the code.
 
 ### Running the Bot
 
@@ -97,8 +117,10 @@ There are two ways to run the bot:
     ```
     *   **`[url]`:** Full URL of the restaurant booking page.
     *   **`[name]`:** Name of the restaurant (used for logging).
-    *   **`[date]`:** Desired date (YYYY-MM-DD).
-    *   **`[time]`:** Desired time (HH:MM, 24-hour format).
+    *   **`[date]`:** Desired date (YYYY-MM-DD format is recommended for CLI input).
+    *   **`[time]`:** Desired time (HH:MM, 24-hour format is recommended for CLI input).
+   
+   Note: The date and time will be automatically formatted according to the website's requirements as defined in the flow file. For example, ontopo.com requires dates in the format "Saturday, April 26" and times in the format "08:00 PM".
     *   **`[guests]`:** Number of guests (positive integer).
     *   **`--no-headless` (Optional):** Runs with a visible browser window. If omitted, runs in headless mode by default.
 
@@ -127,6 +149,8 @@ Flows define the sequence of actions the bot takes on a specific website. Each f
 *   `baseUrl`: (Optional) A base URL for the site.
 *   `startStep`: The key of the first step to execute.
 *   `headless`: (Optional) Boolean to suggest default headless mode (true/false). Overridden by `--no-headless` flag and constructor options.
+*   `dateFormat`: The date format required by the website, using dayjs format specifiers (e.g., "dddd, MMMM D" for "Saturday, April 26").
+*   `timeFormat`: The time format required by the website, using dayjs format specifiers (e.g., "hh:mm A" for "08:00 PM").
 *   `steps`: An object where keys are step names and values are step definitions.
 
 Each **step definition** can include:
