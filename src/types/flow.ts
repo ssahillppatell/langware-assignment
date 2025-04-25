@@ -19,5 +19,7 @@ export interface FlowDefinition {
 	baseUrl: string;
 	headless?: boolean;
 	startStep: string;
+	dateFormat: string;
+	timeFormat: string;
 	steps: Record<string, FlowStep>;
 }

@@ -2,6 +2,8 @@
 	"name": "OnTopo Table Booking",
 	"baseUrl": "https://ontopo.com/en/us",
 	"startStep": "navigateToSearch",
+	"dateFormat": "dddd, MMMM D",
+	"timeFormat": "hh:mm A",
 	"steps": {
 		"navigateToSearch": {
 			"action": "navigate",

@@ -5,6 +5,7 @@ import { createBooking, initializeDb, updateBookingStatus } from "./db";
 import { FlowExecutor } from "./flow/executor";
 import type { BookingDetails } from "./types/booking";
 import type { FlowDefinition } from "./types/flow";
+import { formatDate, formatTime } from "./utils/date";
 import { log } from "./utils/log";
 
 export type BotRunOptions = {
@@ -39,6 +40,15 @@ async function runBotTask(
 		readFileSync(flowFile, "utf-8"),
 	);
 
+	const formattedDate = formatDate(
+		bookingDetails.date,
+		flowDefinition.dateFormat,
+	);
+	const formattedTime = formatTime(
+		bookingDetails.time,
+		flowDefinition.timeFormat,
+	);
+
 	const optionsString = JSON.stringify(options);
 
 	let bookingId: string | null = null;
@@ -46,8 +56,8 @@ async function runBotTask(
 		bookingId = await createBooking(
 			bookingDetails.url,
 			bookingDetails.name,
-			bookingDetails.date,
-			bookingDetails.time,
+			formattedDate,
+			formattedTime,
 			bookingDetails.guests,
 			optionsString,
 		);
@@ -121,9 +131,9 @@ program
 			date,
 			time,
 			guests,
-			cmdOptions: { noHeadless?: boolean; ui?: boolean },
+			cmdOptions: { headless?: boolean; ui?: boolean },
 		) => {
-			const runHeadless = cmdOptions.noHeadless === undefined;
+			const runHeadless = cmdOptions.headless ?? true;
 
 			if (cmdOptions.ui) {
 				log.info("Launching Web UI mode...");
