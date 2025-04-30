@@ -24,7 +24,14 @@ async function runBotTask(
 	);
 
 	const domain = new URL(bookingDetails.url).hostname.replace("www.", "");
-	let flowFile = path.join(process.cwd(), "flows", `${domain}.json`);
+	log.debug(`Domain: ${domain}`);
+	const urlPath = new URL(bookingDetails.url).pathname.replaceAll('/', '.');
+	log.debug(`URL Path: ${urlPath}`);
+	const flowFileName = `${domain}${urlPath === '.' ? '' : urlPath}.json`;
+
+	log.debug(`Flow file name: ${flowFileName}`);
+
+	let flowFile = path.join(process.cwd(), "flows", flowFileName);
 	if (!existsSync(flowFile)) {
 		flowFile = path.join(process.cwd(), "flows", "default.json");
 		if (!existsSync(flowFile)) {
@@ -133,6 +140,7 @@ program
 			guests,
 			cmdOptions: { headless?: boolean; ui?: boolean },
 		) => {
+			log.info("Starting bot...", url, name, date, time, guests, cmdOptions);
 			const runHeadless = cmdOptions.headless ?? true;
 
 			if (cmdOptions.ui) {
@@ -149,7 +157,7 @@ program
 					process.exit(1);
 				}
 			} else {
-				if (!url || !name || !date || !time || !guests) {
+				if (!url || !date || !time || !guests) {
 					log.error(
 						"URL, Name, Date, Time, and Guests arguments are required when not using --ui flag.",
 					);

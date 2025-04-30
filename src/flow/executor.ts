@@ -131,6 +131,8 @@ export class FlowExecutor {
 		)?.[0];
 
 		if (currentStepKey === "checkResults" && selector) {
+			// take screenshot
+			await this.browser.screenshot("checkResults");
 			const selectorExists = await this.browser.elementExists(selector);
 			if (selectorExists) {
 				log.success("Restaurant available");

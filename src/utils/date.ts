@@ -1,6 +1,10 @@
 import dayjs from "dayjs";
 
 export const formatDate = (date: string, format: string): string => {
+	const isToday = dayjs(date).isSame(dayjs(), "day");
+	if(isToday) {
+		return "Today";
+	}
 	return dayjs(date).format(format);
 };
 

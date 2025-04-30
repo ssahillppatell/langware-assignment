@@ -90,4 +90,9 @@ export class BrowserManager {
 			this.page = null;
 		}
 	}
+
+	async screenshot(name: string): Promise<void> {
+		if (!this.page) throw new Error("Browser not initialized");
+		await this.page.screenshot({ path: `screenshot-${name}.png` });
+	}
 }

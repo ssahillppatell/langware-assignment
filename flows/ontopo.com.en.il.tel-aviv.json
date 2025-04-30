@@ -1,0 +1,65 @@
+{
+	"name": "OnTopo Table Booking",
+	"baseUrl": "https://ontopo.com/en/il/tel-aviv",
+	"startStep": "navigateToSearch",
+	"dateFormat": "dddd, MMMM D",
+	"timeFormat": "hh:mm A",
+	"steps": {
+		"navigateToSearch": {
+			"action": "navigate",
+			"value": "https://ontopo.com/en/il/tel-aviv",
+			"description": "Navigate to OnTopo homepage",
+			"waitForTime": 2000,
+			"nextStep": "openGuestsDropdown"
+		},
+		"openGuestsDropdown": {
+			"action": "click",
+			"selector": ".table-button-group > button:nth-child(1)",
+			"description": "Open guest selector",
+			"waitForTime": 1000,
+			"nextStep": "selectPartySize"
+		},
+		"selectPartySize": {
+			"action": "click",
+			"selector": ".dialog > div > div:nth-child({{guests}})",
+			"description": "Select number of guests",
+			"waitForTime": 1000,
+			"nextStep": "selectSpecificDate"
+		},
+		"selectSpecificDate": {
+			"action": "click",
+			"selector": "[id^=date-]:has-text('{{date}}')",
+			"description": "Select the specific date",
+			"waitForTime": 1000,
+			"nextStep": "selectTime"
+		},
+		"selectTime": {
+			"action": "click",
+			"selector": "[id^=time-]:has-text('{{time}}')",
+			"description": "Select time slot",
+			"waitForTime": 1000,
+			"nextStep": "checkAvailability"
+		},
+		"checkAvailability": {
+			"action": "click",
+			"selector": "button:has-text('Find')",
+			"description": "Click to find available tables",
+			"waitForTime": 1000,
+			"nextStep": "checkResults"
+		},
+		"checkForSlot": {
+			"action": "waitForSelector",
+			"selector": ".availabiliy-item",
+			"description": "Check for available slot",
+			"timeout": 2000,
+			"nextStep": "checkResults"
+		},
+		"checkResults": {
+			"action": "waitForSelector",
+			"selector": ".availabiliy-item",
+			"description": "Wait for availability results",
+			"timeout": 10000,
+			"nextStep": null
+		}
+	}
+}
